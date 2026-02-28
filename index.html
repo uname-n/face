@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>face</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
+  <script src="face.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .hero face-rig { width: 60%; max-width: 600px; }
+
+    .showcase {
+      min-height: 100vh;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 100px 24px 80px;
+    }
+
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px 20px 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .card face-rig {
+      width: 100%;
+      pointer-events: none;
+    }
+    .card-name {
+      font-family: 'Dongle', sans-serif;
+      font-size: 24px;
+      color: #aaa;
+      letter-spacing: 0.3px;
+    }
+    .nav-bubble {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #222;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s;
+      z-index: 10;
+    }
+    .nav-bubble:hover { background: #444; }
+    .nav-bubble svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform .3s;
+    }
+    .nav-bubble.up svg { transform: rotate(180deg); }
+
+    .title {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      font-family: 'Dongle', sans-serif;
+      font-size: 80px;
+      color: #222;
+      line-height: 1;
+      z-index: 10;
+    }
+
+    .hero .state-label {
+      position: absolute;
+      top: calc(50% + 120px);
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Dongle', sans-serif;
+      font-size: 36px;
+      color: #bbb;
+      transition: color 10s linear;
+    }
+
+    .section-subtitle {
+      font-family: 'Dongle', sans-serif;
+      font-size: 36px;
+      color: #aaa;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 480px) {
+      .section-subtitle { text-align: right; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="title">Face</div>
+
+  <div class="hero">
+    <face-rig id="hero-face" state="idling"></face-rig>
+    <span class="state-label" id="state-label"></span>
+  </div>
+
+  <div class="showcase" id="showcase">
+    <div class="section-subtitle">Animated</div>
+    <div class="grid" id="grid-animated"></div>
+    <div class="section-subtitle" style="margin-top: 32px;">Static</div>
+    <div class="grid" id="grid-static"></div>
+  </div>
+
+  <button class="nav-bubble" id="nav-bubble">
+    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+
+  <script>
+  (function () {
+    const hero = document.getElementById("hero-face");
+    const gridStatic = document.getElementById("grid-static");
+    const gridAnimated = document.getElementById("grid-animated");
+    const bubble = document.getElementById("nav-bubble");
+    const showcase = document.getElementById("showcase");
+    const titleEl = document.querySelector(".title");
+    const stateLabel = document.getElementById("state-label");
+    const names = Object.keys(states);
+    const heroStates = ["booting", "searching", "entranced", "targeting"];
+    let heroIdx = 0;
+    let atShowcase = false;
+    let cardFaces = [];
+    let scrollThreshold = showcase.offsetTop - window.innerHeight * 0.5;
+
+    const isAnimated = s => "frames" in s;
+
+    new ResizeObserver(() => {
+      scrollThreshold = showcase.offsetTop - window.innerHeight * 0.5;
+    }).observe(showcase);
+
+    const setHeroState = () => {
+      const name = heroStates[heroIdx % heroStates.length];
+      heroIdx++;
+      hero.setAttribute("state", name);
+      stateLabel.textContent = name;
+      stateLabel.style.transition = "none";
+      stateLabel.style.color = "#222";
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          stateLabel.style.transition = "color 10s linear";
+          stateLabel.style.color = "#bbb";
+        });
+      });
+    };
+
+    // hero cycles through random states every 10s
+    setHeroState();
+    let heroInterval = setInterval(setHeroState, 10000);
+
+    // nav bubble direction
+    const updateBubble = () => {
+      const now = window.scrollY >= scrollThreshold;
+      if (now !== atShowcase) {
+        atShowcase = now;
+        bubble.classList.toggle("up", atShowcase);
+        titleEl.textContent = atShowcase ? "State" : "Face";
+
+        if (atShowcase) {
+          clearInterval(heroInterval);
+          hero.setAttribute("disable", "");
+          stateLabel.style.display = "none";
+          cardFaces.forEach(f => {
+            f.setAttribute("state", f.dataset.state);
+            f.removeAttribute("disable");
+          });
+        } else {
+          setHeroState();
+          heroInterval = setInterval(setHeroState, 10000);
+          hero.removeAttribute("disable");
+          stateLabel.style.display = "";
+          cardFaces.forEach(f => f.setAttribute("disable", ""));
+        }
+      }
+    };
+
+    window.addEventListener("scroll", updateBubble, { passive: true });
+
+    bubble.addEventListener("click", () => {
+      if (atShowcase) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        showcase.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+
+    // build state cards (display only)
+    names.forEach(name => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const face = document.createElement("face-rig");
+      face.setAttribute("state", name);
+      face.dataset.state = name;
+      face.setAttribute("disable", "");
+
+      const info = document.createElement("span");
+      info.className = "card-name";
+      info.textContent = name;
+
+      card.appendChild(face);
+      card.appendChild(info);
+
+      const s = states[name];
+      if (isAnimated(s)) {
+        gridAnimated.appendChild(card);
+        if (s.loop === false) {
+          new MutationObserver(() => {
+            if (face.getAttribute("state") !== name) {
+              setTimeout(() => face.setAttribute("state", name), 3000);
+            }
+          }).observe(face, { attributes: true, attributeFilter: ["state"] });
+        }
+      } else {
+        gridStatic.appendChild(card);
+      }
+    });
+
+    cardFaces = showcase.querySelectorAll("face-rig");
+  })();
+  </script>
+</body>
+</html>
