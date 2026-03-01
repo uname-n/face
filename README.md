@@ -24,10 +24,10 @@ Animated SVG character faces as a web component. Drop in a single script and use
 | `staring` | `targeting` |
 | `pondering` | `entranced` |
 | `cool` | `booting` |
-| `possessed` | |
-| `frustrated` | |
-| `demotivated` | |
-| `intense` | |
+| `possessed` |  |
+| `frustrated` |  |
+| `demotivated` |  |
+| `intense` |  |
 
 ## Attributes
 
