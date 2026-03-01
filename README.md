@@ -24,7 +24,7 @@ Animated SVG character faces as a web component. Drop in a single script and use
 | `staring` | `targeting` |
 | `pondering` | `entranced` |
 | `cool` | `booting` |
-| `possessed` |  |
+| `possessed` | `konami` |
 | `frustrated` |  |
 | `demotivated` |  |
 | `intense` |  |
