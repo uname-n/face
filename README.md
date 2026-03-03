@@ -21,13 +21,14 @@ Animated SVG character faces as a web component. Drop in a single script and use
 |--------|----------|
 | `happy` | `idling` |
 | `sad` | `idling_night` |
-| `staring` | `searching` |
-| `pondering` | `targeting` |
-| `cool` | `entranced` |
-| `possessed` | `booting` |
-| `frustrated` | `konami` |
-| `demotivated` | `goodnight` |
-| `intense` | `shutdown` |
+| `crying` | `searching` |
+| `staring` | `targeting` |
+| `pondering` | `entranced` |
+| `cool` | `booting` |
+| `possessed` | `konami` |
+| `frustrated` | `goodnight` |
+| `demotivated` | `shutdown` |
+| `intense` |  |
 | `offline` |  |
 
 ## Attributes
